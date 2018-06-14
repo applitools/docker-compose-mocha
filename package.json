@@ -8,7 +8,8 @@
     "test": "npm run test:unit && npm run test:e2e && npm run lint #&& npm run flow",
     "test:e2e": "mocha --no-timeouts test/end2end/*.js",
     "test:unit": "mocha test/unit/*.js",
-    "flow": "flow; test $? -eq 0 -o $? -eq 2"
+    "flow": "flow; test $? -eq 0 -o $? -eq 2",
+    "prepublishOnly": "npm version patch"
   },
   "repository": {
     "type": "git",
@@ -16,7 +17,7 @@
     "private": true
   },
   "author": "Itamar Arjuan",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "dependencies": {
     "bluebird": "^3.5.1",
     "chalk": "^1.1.3",
