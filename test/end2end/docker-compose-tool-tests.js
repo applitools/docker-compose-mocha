@@ -1,4 +1,4 @@
-const { describe, it } = require('mocha');
+const { describe, it, before: b } = require('mocha');
 const { expect } = require('chai');
 const { coroutine } = require('bluebird');
 const main = require('./../../index');
@@ -20,7 +20,17 @@ describe('dockerComposeTool', () => {
   const pathToComposeForEnv = `${__dirname}/docker-compose-envvars.yml`;
 
   it('should load an environment correctly and wait for it (healthcheck) to be ready', () => runAnEnvironment(pathToCompose));
-  it('should load an environment correctly and brutallyKill it', () => runAnEnvironment(pathToCompose, undefined, { brutallyKill: true }));
+
+  describe('when bruttaly killing an environment', () => {
+    let envName;
+    b(coroutine(function* () {
+      envName = yield runAnEnvironment(pathToCompose, { brutallyKill: true });
+    }));
+    it('should clean it afterwards', coroutine(function* () {
+      yield checkOldEnvironmentWasCleaned(pathToCompose, envName);
+    }));
+  });
+
 
   it('should load a sub-environment correctly, and then the rest of the environment', coroutine(function* () {
     const spy = sinon.spy(dockerPullImageByName);
