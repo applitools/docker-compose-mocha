@@ -83,7 +83,8 @@ const runAnEnvironment = coroutine(function* (pathToCompose, targetEnvName, opti
     expect(request2Result).to.equal('Hello from test app on port 3002');
     console.log('success again!');
   }));
-  return verifyEnvironmentDownByProjectName(generatedEnvName, pathToCompose);
+  yield verifyEnvironmentDownByProjectName(generatedEnvName, pathToCompose);
+  return generatedEnvName;
 });
 
 const runAnEnvironmentWithStopStart = coroutine(
