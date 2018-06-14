@@ -11,11 +11,13 @@ const simulateMochaRun = coroutine(function* (initCode, testCode) {
   const mochaAfter = (a) => {
     mochaAfterReceivedMethod = a;
   };
-
-  initCode(mochaBefore, mochaAfter);
-  yield mochaBeforeReceivedMethod();
-  yield testCode();
-  yield mochaAfterReceivedMethod();
+  try {
+    initCode(mochaBefore, mochaAfter);
+    yield mochaBeforeReceivedMethod();
+    yield testCode();
+  } finally {
+    yield mochaAfterReceivedMethod();
+  }
 });
 
 module.exports = {
