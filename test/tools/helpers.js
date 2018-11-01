@@ -7,7 +7,7 @@ const dockerStartByServiceName = require('./../../lib/docker-start-by-service-na
 const dockerCheckByServiceName = require('./../../lib/docker-check-by-service-name');
 const main = require('./../../index');
 const { exec } = require('child-process-promise');
-const rp = require('request-promise');
+const fetch = require('node-fetch');
 const simulateMochaRun = require('./mocha-helper').simulateMochaRun;
 const pullTools = require('./../../lib/docker-pull-image-by-name');
 
@@ -40,14 +40,13 @@ const runAnEnvironment = coroutine(function* (pathToCompose, targetEnvName, opti
           custom: {
             db: coroutine(function* (url) {
               try {
-                const response = yield rp({
-                  url: `http://${url}/`,
+                const response = yield fetch(`http://${url}/`, {
                   resolveWithFullResponse: true,
                   timeout: 2000,
                 });
 
                 console.log('From within the custom poll method..');
-                return (response.statusCode >= 200 && response.statusCode < 500);
+                return (response.status >= 200 && response.status < 500);
               } catch (err) {
                 yield Promise.delay(1000);
                 return false;
@@ -63,10 +62,9 @@ const runAnEnvironment = coroutine(function* (pathToCompose, targetEnvName, opti
     const targetUriForService1 = `http://${resultDct1}`;
     console.log(`Performing request to ${targetUriForService1}`);
 
-    const requestResult = yield rp({
-      uri: targetUriForService1,
+    const requestResult = yield fetch(targetUriForService1, {
       timeout: 2000,
-    });
+    }).then(res => res.text());
     expect(requestResult).to.equal('Hello from test app on port 3001');
     console.log('success!');
 
@@ -76,10 +74,9 @@ const runAnEnvironment = coroutine(function* (pathToCompose, targetEnvName, opti
     const targetUriForService2 = `http://${resultDct2}`;
     console.log(`Performing request to ${targetUriForService2}`);
 
-    const request2Result = yield rp({
-      uri: targetUriForService2,
+    const request2Result = yield fetch(targetUriForService2, {
       timeout: 2000,
-    });
+    }).then(res => res.text());
     expect(request2Result).to.equal('Hello from test app on port 3002');
     console.log('success again!');
   }));
