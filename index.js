@@ -69,7 +69,7 @@ module.exports = {
         yield dockerPullImagesFromComposeFile(pathToComposeFile, startOnlyTheseServices);
       }
       if (performCleanup) {
-        yield cleanupOrphanEnvironments();
+        yield cleanupOrphanEnvironments().catch(() => 1);
       }
       const onlyTheseServicesMessage = startOnlyTheseServices
         ? `, using only these services: ${startOnlyTheseServices.join(',')}`
@@ -105,7 +105,7 @@ module.exports = {
     afterFunction(() => {
       if (performContainerCleanup) {
         return cleanupContainersByEnvironmentName(runNameSpecific,
-          pathToComposeFile, runNameDisplay, brutallyKill).catch(() => 1);
+          pathToComposeFile, runNameDisplay, brutallyKill);
       }
 
       return Promise.resolve();
