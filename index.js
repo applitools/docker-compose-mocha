@@ -105,7 +105,7 @@ module.exports = {
     afterFunction(() => {
       if (performContainerCleanup) {
         return cleanupContainersByEnvironmentName(runNameSpecific,
-          pathToComposeFile, runNameDisplay, brutallyKill);
+          pathToComposeFile, runNameDisplay, brutallyKill).catch(() => 1);
       }
 
       return Promise.resolve();
