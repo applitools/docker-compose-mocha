@@ -69,7 +69,7 @@ module.exports = {
         yield dockerPullImagesFromComposeFile(pathToComposeFile, startOnlyTheseServices);
       }
       if (performCleanup) {
-        yield cleanupOrphanEnvironments().catch(() => 1);
+        yield cleanupOrphanEnvironments(process.env.NODE_ENV === 'developement' || !process.env.NODE_ENV ? 1 : 5).catch(() => 1);
       }
       const onlyTheseServicesMessage = startOnlyTheseServices
         ? `, using only these services: ${startOnlyTheseServices.join(',')}`
