@@ -55,12 +55,12 @@ describe('dockerComposeTool', () => {
 
   it('should clean up before setting up an environment correctly', () => runAnOldEnvironment(pathToCompose)
     .then(oldEnvironmentName => runAnEnvironment(pathToCompose)
-      .then(() => checkOldEnvironmentWasCleaned(pathToCompose, oldEnvironmentName))));
+    .then(() => checkOldEnvironmentWasCleaned(pathToCompose, oldEnvironmentName))));
 
   it('getLogsForService and should use envVar', coroutine(function* () {
     let envName;
     yield simulateMochaRun((before, after) => {
-      envName = main.dockerComposeTool(before, after, pathToComposeForEnv, { envVars: { FILE_TO_TAIL: '/etc/hosts' } });
+      envName = main.dockerComposeTool(before, after, pathToComposeForEnv, { containerRetentionInMinutes: 0, envVars: { FILE_TO_TAIL: '/etc/hosts' } });
     }, coroutine(function* () {
       const stdout = yield main.getLogsForService(envName, pathToComposeForEnv, 'dct_s1');
       expect(stdout).to.include('localhost');

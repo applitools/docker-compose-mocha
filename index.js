@@ -54,7 +54,8 @@ module.exports = {
     afterFunction/* :Function */,
     pathToComposeFile/* : string */,
     { startOnlyTheseServices, envName, envVars,
-      healthCheck, cleanUp, containerCleanUp, shouldPullImages = true, brutallyKill = false }
+      healthCheck, cleanUp, containerCleanUp, shouldPullImages = true, brutallyKill = false,
+      containerRetentionInMinutes }
       /* :DockerComposeToolOptions */ = {})/* : string */ {
     const randomComposeEnv = envName
       ? extractEnvFromEnvName(envName)
@@ -69,7 +70,10 @@ module.exports = {
         yield dockerPullImagesFromComposeFile(pathToComposeFile, startOnlyTheseServices);
       }
       if (performCleanup) {
-        yield cleanupOrphanEnvironments(process.env.NODE_ENV === 'developement' || !process.env.NODE_ENV ? 1 : 5).catch(() => 1);
+        // eslint-disable-next-line
+        yield cleanupOrphanEnvironments(containerRetentionInMinutes == null
+          ? (process.env.NODE_ENV === 'developement' || !process.env.NODE_ENV ? 2 : 5)
+          : containerRetentionInMinutes).catch(() => 1);
       }
       const onlyTheseServicesMessage = startOnlyTheseServices
         ? `, using only these services: ${startOnlyTheseServices.join(',')}`

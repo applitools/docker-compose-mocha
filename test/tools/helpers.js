@@ -34,6 +34,7 @@ const runAnEnvironment = coroutine(function* (pathToCompose, targetEnvName, opti
   yield simulateMochaRun((before, after) => {
     generatedEnvName = main.dockerComposeTool(before, after, pathToCompose, Object.assign({
       targetEnvName,
+      containerRetentionInMinutes: 0,
       healthCheck: {
         state: true,
         options: {
@@ -117,6 +118,7 @@ const runASubEnvironment = coroutine(function* (pathToCompose) {
   const firstEnvLoad = (before, after) => {
     const options = {
       containerCleanUp: false,
+      containerRetentionInMinutes: 0,
       healthCheck: {
         state: true,
       },
@@ -144,6 +146,7 @@ const runASubEnvironment = coroutine(function* (pathToCompose) {
   const secondEnvLoad = (before, after) => {
     const options = {
       cleanUp: false,
+      containerRetentionInMinutes: 0,
       healthCheck: {
         state: true,
       },
