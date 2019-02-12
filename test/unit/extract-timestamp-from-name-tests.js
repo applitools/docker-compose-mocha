@@ -6,7 +6,7 @@ const { describe, it } = require('mocha');
 const divider = 'zzdivzz';
 describe('extractTimestampFromName', () => {
   it('should extract the unix timestamp from the container name', () => {
-    const input = '233dfb33b22f cicontainerlodloutrinzzdivzz1481723893_dct_s1_1';
-    expect(extractTimestampFromName(input, divider)).to.equal(1481723893);
+    const input = 'ce2366ff75c5 cicontaineryaniv_barelzzdivzz1549961204_screenshot-webhook_1';
+    expect(extractTimestampFromName(input, divider)).to.equal(1549961204);
   });
 });
