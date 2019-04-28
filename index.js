@@ -91,7 +91,7 @@ module.exports = {
         ? startOnlyTheseServices.join(' ')
         : '';
       yield exec(`docker-compose -p ${runNameSpecific} -f "${pathToComposeFile}" up -d ${onlyTheseServicesMessageCommandAddition}`,
-        envVars ? { env: envVars } : {});
+        envVars ? { env: { ...process.env, ...envVars } } : {});
 
       if (!process.env.NOSPIN) {
         spinner.stop();

@@ -55,12 +55,24 @@ describe('dockerComposeTool', () => {
 
   it('should clean up before setting up an environment correctly', () => runAnOldEnvironment(pathToCompose)
     .then(oldEnvironmentName => runAnEnvironment(pathToCompose)
-    .then(() => checkOldEnvironmentWasCleaned(pathToCompose, oldEnvironmentName))));
+      .then(() => checkOldEnvironmentWasCleaned(pathToCompose, oldEnvironmentName))));
 
   it('getLogsForService and should use envVar', coroutine(function* () {
+    process.env.FILE_TO_TAIL = '/blabla'; // This should be overriden with the value specified in envVars parameter
     let envName;
     yield simulateMochaRun((before, after) => {
       envName = main.dockerComposeTool(before, after, pathToComposeForEnv, { containerRetentionInMinutes: 0, envVars: { FILE_TO_TAIL: '/etc/hosts' } });
+    }, coroutine(function* () {
+      const stdout = yield main.getLogsForService(envName, pathToComposeForEnv, 'dct_s1');
+      expect(stdout).to.include('localhost');
+    }));
+  }));
+
+  it('envVars should inherit from existing process env vars', coroutine(function* () {
+    process.env.FILE_TO_TAIL = '/etc/hosts';
+    let envName;
+    yield simulateMochaRun((before, after) => {
+      envName = main.dockerComposeTool(before, after, pathToComposeForEnv, { containerRetentionInMinutes: 0, envVars: { ANOTHER_VAR: 'hello' } });
     }, coroutine(function* () {
       const stdout = yield main.getLogsForService(envName, pathToComposeForEnv, 'dct_s1');
       expect(stdout).to.include('localhost');
