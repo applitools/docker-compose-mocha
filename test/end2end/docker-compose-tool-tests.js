@@ -68,14 +68,14 @@ describe('dockerComposeTool', () => {
     }));
   }));
 
-  it('envVars should inherit from existing process env vars', coroutine(function* () {
+  it('envVars should not inherit from existing process env vars', coroutine(function* () {
     process.env.FILE_TO_TAIL = '/etc/hosts';
     let envName;
     yield simulateMochaRun((before, after) => {
       envName = main.dockerComposeTool(before, after, pathToComposeForEnv, { containerRetentionInMinutes: 0, envVars: { ANOTHER_VAR: 'hello' } });
     }, coroutine(function* () {
-      const stdout = yield main.getLogsForService(envName, pathToComposeForEnv, 'dct_s1');
-      expect(stdout).to.include('localhost');
+      const stdout = yield main.getLogsForService(envName, pathToComposeForEnv, 'print_env');
+      expect(stdout).to.not.include('FILE_TO_TAIL');
     }));
   }));
 });

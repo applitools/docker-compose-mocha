@@ -53,7 +53,7 @@ module.exports = {
   dockerComposeTool: function dockerComposeTool(beforeFunction/* :Function */,
     afterFunction/* :Function */,
     pathToComposeFile/* : string */,
-    { startOnlyTheseServices, envName, envVars,
+    { startOnlyTheseServices, envName, envVars, printEnvVars = false,
       healthCheck, cleanUp, containerCleanUp, shouldPullImages = true, brutallyKill = false,
       containerRetentionInMinutes }
       /* :DockerComposeToolOptions */ = {})/* : string */ {
@@ -90,8 +90,16 @@ module.exports = {
       const onlyTheseServicesMessageCommandAddition = startOnlyTheseServices
         ? startOnlyTheseServices.join(' ')
         : '';
+
+      if (printEnvVars === true && envVars) {
+        console.log('--- ENVIRONMENT VARIABLES START');
+        Object.keys(envVars).forEach((envVar) => {
+          console.log(`export ${envVar}=${envVars[envVar]}`);
+        });
+        console.log('--- ENVIRONMENT VARIABLES END');
+      }
       yield exec(`docker-compose -p ${runNameSpecific} -f "${pathToComposeFile}" up -d ${onlyTheseServicesMessageCommandAddition}`,
-        envVars ? { env: { ...process.env, ...envVars } } : {});
+        envVars ? { env: { PATH: process.env.PATH, ...envVars } } : {});
 
       if (!process.env.NOSPIN) {
         spinner.stop();

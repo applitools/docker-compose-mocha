@@ -3,3 +3,10 @@ dct_s1:
   ports:
     - '3001'
   command: 'tail -f ${FILE_TO_TAIL}'
+print_env:
+  image: alpine:3.4
+  ports:
+    - '3001'
+  command: 'env'
+  environment:
+    - P2=${PATH}
