@@ -1,7 +1,7 @@
 
 const { expect } = require('chai');
-const extractTimestampFromName = require('./../../lib/extract-timestamp-from-name');
 const { describe, it } = require('mocha');
+const extractTimestampFromName = require('./../../lib/extract-timestamp-from-name');
 
 const divider = 'zzdivzz';
 describe('extractTimestampFromName', () => {

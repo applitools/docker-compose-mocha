@@ -3,9 +3,9 @@
 
 const { exec } = require('child-process-promise');
 const Promise = require('bluebird');
-const chalk = require('chalk');
-const chance = require('./lib/setup-environment-names-seed');
+const chalk = require('chalk').default;
 const { Spinner } = require('cli-spinner');
+const chance = require('./lib/setup-environment-names-seed');
 const { cleanupContainersByEnvironmentName, cleanupOrphanEnvironments } = require('./lib/docker-utility-functions');
 
 const dockerPullImagesFromComposeFile = require('./lib/docker-pull-images-from-compose-file');
@@ -53,17 +53,26 @@ module.exports = {
   dockerComposeTool: function dockerComposeTool(beforeFunction/* :Function */,
     afterFunction/* :Function */,
     pathToComposeFile/* : string */,
-    { startOnlyTheseServices, envName, envVars, printEnvVars = false,
-      healthCheck, cleanUp, containerCleanUp, shouldPullImages = true, brutallyKill = false,
-      containerRetentionInMinutes }
-      /* :DockerComposeToolOptions */ = {})/* : string */ {
+    {
+      startOnlyTheseServices = undefined,
+      envName = undefined,
+      envVars = undefined,
+      printEnvVars = false,
+      healthCheck = undefined,
+      cleanUp = true,
+      containerCleanUp = true,
+      shouldPullImages = true,
+      brutallyKill = false,
+      containerRetentionInMinutes = null,
+    }
+    /* :DockerComposeToolOptions */ = {})/* : string */ {
     const randomComposeEnv = envName
       ? extractEnvFromEnvName(envName)
       : getRandomEnvironmentName(chance);
     const runNameSpecific = randomComposeEnv.envName;
     const runNameDisplay = `${randomComposeEnv.firstName} ${randomComposeEnv.lastName}`;
-    const performCleanup = cleanUp === undefined ? true : cleanUp;
-    const performContainerCleanup = containerCleanUp === undefined ? true : containerCleanUp;
+    const performCleanup = cleanUp;
+    const performContainerCleanup = containerCleanUp;
 
     beforeFunction(Promise.coroutine(function* () {
       if (shouldPullImages) {
@@ -141,4 +150,3 @@ module.exports = {
   dockerStopByServiceName,
   dockerCheckByServiceName,
 };
-

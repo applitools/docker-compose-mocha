@@ -1,9 +1,8 @@
 const { describe, it, before: b } = require('mocha');
 const { expect } = require('chai');
-const { coroutine } = require('bluebird');
-const main = require('./../../index');
-const simulateMochaRun = require('../tools/mocha-helper').simulateMochaRun;
 const sinon = require('sinon');
+const main = require('./../../index');
+const { simulateMochaRun } = require('../tools/mocha-helper');
 const { dockerPullImageByName } = require('./../../lib/docker-pull-image-by-name');
 const dockerPullHostObject = require('./../../lib/docker-pull-image-by-name');
 
@@ -23,33 +22,33 @@ describe('dockerComposeTool', () => {
 
   describe('when bruttaly killing an environment', () => {
     let envName;
-    b(coroutine(function* () {
-      envName = yield runAnEnvironment(pathToCompose, { brutallyKill: true });
-    }));
-    it('should clean it afterwards', coroutine(function* () {
-      yield checkOldEnvironmentWasCleaned(pathToCompose, envName);
-    }));
+    b(async () => {
+      envName = await runAnEnvironment(pathToCompose, { brutallyKill: true });
+    });
+    it('should clean it afterwards', async () => {
+      await checkOldEnvironmentWasCleaned(pathToCompose, envName);
+    });
   });
 
 
-  it('should load a sub-environment correctly, and then the rest of the environment', coroutine(function* () {
+  it('should load a sub-environment correctly, and then the rest of the environment', async () => {
     const spy = sinon.spy(dockerPullImageByName);
     dockerPullHostObject.dockerPullImageByName = spy;
-    const envName = yield runASubEnvironment(pathToCompose);
+    const envName = await runASubEnvironment(pathToCompose);
     expect(spy.callCount).to.equal(2);
-    yield runAnEnvironment(pathToCompose, envName);
-  }));
+    await runAnEnvironment(pathToCompose, envName);
+  });
 
-  it('should not pull images if shouldPull is false', coroutine(function* () {
+  it('should not pull images if shouldPull is false', async () => {
     let caughtException = false;
     try {
-      yield runAnEnvironment(`${__dirname}/docker-compose-with-unpulled-image.yml`, null, { shouldPullImages: false });
+      await runAnEnvironment(`${__dirname}/docker-compose-with-unpulled-image.yml`, null, { shouldPullImages: false });
     } catch (e) {
       caughtException = true;
     }
 
     expect(caughtException).to.equal(true);
-  }));
+  });
 
   it('should stop the service by name and see its not running and then start the service and see its running', () => runAnEnvironmentWithStopStart(pathToCompose));
 
@@ -57,25 +56,25 @@ describe('dockerComposeTool', () => {
     .then(oldEnvironmentName => runAnEnvironment(pathToCompose)
       .then(() => checkOldEnvironmentWasCleaned(pathToCompose, oldEnvironmentName))));
 
-  it('getLogsForService and should use envVar', coroutine(function* () {
+  it('getLogsForService and should use envVar', async () => {
     process.env.FILE_TO_TAIL = '/blabla'; // This should be overriden with the value specified in envVars parameter
     let envName;
-    yield simulateMochaRun((before, after) => {
+    await simulateMochaRun((before, after) => {
       envName = main.dockerComposeTool(before, after, pathToComposeForEnv, { containerRetentionInMinutes: 0, envVars: { FILE_TO_TAIL: '/etc/hosts' } });
-    }, coroutine(function* () {
-      const stdout = yield main.getLogsForService(envName, pathToComposeForEnv, 'dct_s1');
+    }, async () => {
+      const stdout = await main.getLogsForService(envName, pathToComposeForEnv, 'dct_s1');
       expect(stdout).to.include('localhost');
-    }));
-  }));
+    });
+  });
 
-  it('envVars should not inherit from existing process env vars', coroutine(function* () {
+  it('envVars should not inherit from existing process env vars', async () => {
     process.env.FILE_TO_TAIL = '/etc/hosts';
     let envName;
-    yield simulateMochaRun((before, after) => {
+    await simulateMochaRun((before, after) => {
       envName = main.dockerComposeTool(before, after, pathToComposeForEnv, { containerRetentionInMinutes: 0, envVars: { ANOTHER_VAR: 'hello' } });
-    }, coroutine(function* () {
-      const stdout = yield main.getLogsForService(envName, pathToComposeForEnv, 'print_env');
+    }, async () => {
+      const stdout = await main.getLogsForService(envName, pathToComposeForEnv, 'print_env');
       expect(stdout).to.not.include('FILE_TO_TAIL');
-    }));
-  }));
+    });
+  });
 });

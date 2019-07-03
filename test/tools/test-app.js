@@ -1,7 +1,7 @@
 const http = require('http');
 
 const PORT = process.env.PORT || 8080;
-const DELAY = (process.env.DELAY * 1000) || 100;
+const DELAY = (parseInt(process.env.DELAY || '0', 10) * 1000) || 100;
 
 function startServer() {
   function handleRequest(request, response) {

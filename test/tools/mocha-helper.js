@@ -1,6 +1,4 @@
-const { coroutine } = require('bluebird');
-
-const simulateMochaRun = coroutine(function* (initCode, testCode) {
+async function simulateMochaRun(initCode, testCode) {
   let mochaBeforeReceivedMethod;
   let mochaAfterReceivedMethod;
 
@@ -13,12 +11,12 @@ const simulateMochaRun = coroutine(function* (initCode, testCode) {
   };
   try {
     initCode(mochaBefore, mochaAfter);
-    yield mochaBeforeReceivedMethod();
-    yield testCode();
+    await mochaBeforeReceivedMethod();
+    await testCode();
   } finally {
-    yield mochaAfterReceivedMethod();
+    await mochaAfterReceivedMethod();
   }
-});
+}
 
 module.exports = {
   simulateMochaRun,
