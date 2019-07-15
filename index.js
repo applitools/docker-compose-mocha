@@ -2,7 +2,6 @@
 
 
 const { exec } = require('child-process-promise');
-const Promise = require('bluebird');
 const chalk = require('chalk').default;
 const { Spinner } = require('cli-spinner');
 const chance = require('./lib/setup-environment-names-seed');
@@ -17,6 +16,15 @@ const dockerCheckByServiceName = require('./lib/docker-check-by-service-name');
 const healthCheckMethods = require('./lib/health-check-methods');
 const getAddressForService = require('./lib/get-address-for-service');
 const getLogsForService = require('./lib/get-logs-for-service');
+
+
+function replaceFunctionsWithTheirValues(envVars) {
+  Object.entries(envVars).forEach(([key, value]) => {
+    if (typeof value === 'function') {
+      envVars[key] = value(); // eslint-disable-line
+    }
+  });
+}
 
 /* ::
  type DockerComposeToolOptions = {
@@ -74,13 +82,13 @@ module.exports = {
     const performCleanup = cleanUp;
     const performContainerCleanup = containerCleanUp;
 
-    beforeFunction(Promise.coroutine(function* () {
+    beforeFunction(async () => {
       if (shouldPullImages) {
-        yield dockerPullImagesFromComposeFile(pathToComposeFile, startOnlyTheseServices);
+        await dockerPullImagesFromComposeFile(pathToComposeFile, startOnlyTheseServices);
       }
       if (performCleanup) {
         // eslint-disable-next-line
-        yield cleanupOrphanEnvironments(containerRetentionInMinutes == null
+        await cleanupOrphanEnvironments(containerRetentionInMinutes == null
           ? (process.env.NODE_ENV === 'developement' || !process.env.NODE_ENV ? 2 : 5)
           : containerRetentionInMinutes).catch(() => 1);
       }
@@ -100,6 +108,10 @@ module.exports = {
         ? startOnlyTheseServices.join(' ')
         : '';
 
+      if (envVars) {
+        replaceFunctionsWithTheirValues(envVars);
+      }
+
       if (printEnvVars === true && envVars) {
         console.log('--- ENVIRONMENT VARIABLES START');
         Object.keys(envVars).forEach((envVar) => {
@@ -107,7 +119,7 @@ module.exports = {
         });
         console.log('--- ENVIRONMENT VARIABLES END');
       }
-      yield exec(`docker-compose -p ${runNameSpecific} -f "${pathToComposeFile}" up -d ${onlyTheseServicesMessageCommandAddition}`,
+      await exec(`docker-compose -p ${runNameSpecific} -f "${pathToComposeFile}" up -d ${onlyTheseServicesMessageCommandAddition}`,
         envVars ? { env: { PATH: process.env.PATH, ...envVars } } : {});
 
       if (!process.env.NOSPIN) {
@@ -116,12 +128,12 @@ module.exports = {
       }
 
       if (healthCheck !== null && typeof healthCheck === 'object' && healthCheck.state === true) {
-        yield healthCheckMethods.verifyServicesReady(runNameSpecific,
+        await healthCheckMethods.verifyServicesReady(runNameSpecific,
           pathToComposeFile,
           healthCheck.options || {},
           startOnlyTheseServices);
       }
-    }));
+    });
 
     afterFunction(() => {
       if (performContainerCleanup) {

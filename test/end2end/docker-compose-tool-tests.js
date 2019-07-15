@@ -71,7 +71,7 @@ describe('dockerComposeTool', () => {
     process.env.FILE_TO_TAIL = '/etc/hosts';
     let envName;
     await simulateMochaRun((before, after) => {
-      envName = main.dockerComposeTool(before, after, pathToComposeForEnv, { containerRetentionInMinutes: 0, envVars: { ANOTHER_VAR: 'hello' } });
+      envName = main.dockerComposeTool(before, after, pathToComposeForEnv, { containerRetentionInMinutes: 0, envVars: { ANOTHER_VAR: () => 'hello' } });
     }, async () => {
       const stdout = await main.getLogsForService(envName, pathToComposeForEnv, 'print_env');
       expect(stdout).to.not.include('FILE_TO_TAIL');

@@ -162,15 +162,15 @@ You can also perform starting and stoping dockerized services during the test:
 1. stop the service (containers) which was started inside the docker compose file
 const serviceName = 'dct_s1';
 const envName = main.dockerComposeTool(before, after, pathToCompose, {envName});
-yield dockerStopByServiceName(generatedEnvName, pathToCompose, serviceName);
+await dockerStopByServiceName(generatedEnvName, pathToCompose, serviceName);
 
 2. and then you can start the service (container) after it was stopped
-const afterStopResults = yield dockerListByServiceName(generatedEnvName, pathToCompose, serviceName);
+const afterStopResults = await dockerListByServiceName(generatedEnvName, pathToCompose, serviceName);
 expect(afterStopResults).to.eql(false);
-yield dockerStartByServiceName(generatedEnvName, pathToCompose, serviceName);
+await dockerStartByServiceName(generatedEnvName, pathToCompose, serviceName);
 
 3. check if a service is running by serviceName and status Up
-const afterStopResults = yield dockerListByServiceName(generatedEnvName, pathToCompose, serviceName);
+const afterStopResults = await dockerListByServiceName(generatedEnvName, pathToCompose, serviceName);
 
 ```js
 // run only a and b
@@ -212,7 +212,7 @@ const options = {
         state: true,
         options: {
             custom: {
-                mysql: Promise.coroutine(function*(address) {
+                mysql: async function(address) {
                     // => Do some code here to check when
                     // mysql is ready to accept connections
                 })
@@ -239,9 +239,9 @@ and should also return `true` upon a successful polling or `false` for a non suc
 ```js
 const options = {
   custom: {
-    mysql: Promise.coroutine(function*(address) {
+    mysql: async function(address) {
         try {
-          const connection = yield mysqlDriver.connect(address);
+          const connection = await mysqlDriver.connect(address);
           console.log(connection); // => The connection here should be open
           return true;
         } catch (err) {
