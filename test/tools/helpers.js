@@ -32,7 +32,7 @@ function verifyEnvironmentDownByProjectName(pathToCompose, runName) {
 const runAnEnvironment = async (pathToCompose, targetEnvName, options) => {
   let generatedEnvName = '';
   await simulateMochaRun((before, after) => {
-    generatedEnvName = main.dockerComposeTool(before, after, pathToCompose, Object.assign({
+    generatedEnvName = main.dockerComposeTool(before, after, pathToCompose, {
       targetEnvName,
       containerRetentionInMinutes: 0,
       healthCheck: {
@@ -56,7 +56,8 @@ const runAnEnvironment = async (pathToCompose, targetEnvName, options) => {
           },
         },
       },
-    }, options || {}));
+      ...options || {},
+    });
   }, async () => {
     const resultDct1 = await main.getAddressForService(generatedEnvName, pathToCompose, 'dct_s1', 3001);
     expect(Number(resultDct1.replace('0.0.0.0:', ''))).to.be.above(1);
@@ -65,7 +66,7 @@ const runAnEnvironment = async (pathToCompose, targetEnvName, options) => {
 
     const requestResult = await fetch(targetUriForService1, {
       timeout: 2000,
-    }).then(res => res.text());
+    }).then((res) => res.text());
     expect(requestResult).to.equal('Hello from test app on port 3001');
     console.log('success!');
 
@@ -77,7 +78,7 @@ const runAnEnvironment = async (pathToCompose, targetEnvName, options) => {
 
     const request2Result = await fetch(targetUriForService2, {
       timeout: 2000,
-    }).then(res => res.text());
+    }).then((res) => res.text());
     expect(request2Result).to.equal('Hello from test app on port 3002');
     console.log('success again!');
   });
@@ -117,6 +118,7 @@ const runASubEnvironment = async (pathToCompose) => {
   const firstEnvLoad = (before, after) => {
     const options = {
       containerCleanUp: false,
+      shouldPullImages: true,
       containerRetentionInMinutes: 0,
       healthCheck: {
         state: true,
@@ -146,6 +148,7 @@ const runASubEnvironment = async (pathToCompose) => {
     const options = {
       cleanUp: false,
       containerRetentionInMinutes: 0,
+      shouldPullImages: true,
       healthCheck: {
         state: true,
       },

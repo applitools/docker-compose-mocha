@@ -31,7 +31,7 @@ describe('dockerComposeTool', () => {
   });
 
 
-  it('should load a sub-environment correctly, and then the rest of the environment', async () => {
+  it.only('should load a sub-environment correctly, and then the rest of the environment', async () => {
     const spy = sinon.spy(dockerPullImageByName);
     dockerPullHostObject.dockerPullImageByName = spy;
     const envName = await runASubEnvironment(pathToCompose);
@@ -53,7 +53,7 @@ describe('dockerComposeTool', () => {
   it('should stop the service by name and see its not running and then start the service and see its running', () => runAnEnvironmentWithStopStart(pathToCompose));
 
   it('should clean up before setting up an environment correctly', () => runAnOldEnvironment(pathToCompose)
-    .then(oldEnvironmentName => runAnEnvironment(pathToCompose)
+    .then((oldEnvironmentName) => runAnEnvironment(pathToCompose)
       .then(() => checkOldEnvironmentWasCleaned(pathToCompose, oldEnvironmentName))));
 
   it('getLogsForService and should use envVar', async () => {

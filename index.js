@@ -69,8 +69,8 @@ module.exports = {
       healthCheck = undefined,
       cleanUp = true,
       containerCleanUp = true,
-      shouldPullImages = true,
-      brutallyKill = false,
+      shouldPullImages = false,
+      brutallyKill = true,
       containerRetentionInMinutes = null,
     }
     /* :DockerComposeToolOptions */ = {})/* : string */ {
