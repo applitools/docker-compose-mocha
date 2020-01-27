@@ -12,6 +12,8 @@ const { getRandomEnvironmentName, extractEnvFromEnvName } = require('./lib/get-r
 
 const dockerStartByServiceName = require('./lib/docker-start-by-service-name');
 const dockerStopByServiceName = require('./lib/docker-stop-by-service-name');
+const dockerPauseByServiceName = require('./lib/docker-pause-by-service-name');
+const dockerUnpauseByServiceName = require('./lib/docker-unpause-by-service-name');
 const dockerCheckByServiceName = require('./lib/docker-check-by-service-name');
 const healthCheckMethods = require('./lib/health-check-methods');
 const getAddressForService = require('./lib/get-address-for-service');
@@ -27,7 +29,7 @@ function replaceFunctionsWithTheirValues(envVars) {
 }
 
 /* ::
- type DockerComposeToolOptions = {
+type DockerComposeToolOptions = {
  startOnlyTheseServices: ?string[],
  envName: ?string,
  envVars: ?{[name:string]: string},
@@ -161,4 +163,6 @@ module.exports = {
   dockerStartByServiceName,
   dockerStopByServiceName,
   dockerCheckByServiceName,
+  dockerPauseByServiceName,
+  dockerUnpauseByServiceName,
 };
