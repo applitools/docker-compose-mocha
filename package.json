@@ -1,6 +1,6 @@
 {
   "name": "@applitools/docker-compose-mocha",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Tool used for setting up an isolated environment for end to end testing / integration testing using Docker Compose",
   "main": "index.js",
   "scripts": {
@@ -19,19 +19,20 @@
   "license": "UNLICENSED",
   "dependencies": {
     "chalk": "^2.4.2",
-    "chance": "^1.0.18",
+    "chance": "^1.1.4",
     "child-process-promise": "^2.2.1",
     "cli-spinner": "^0.2.10",
     "js-yaml": "^3.13.1",
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {
+    "@applitools/build-commons": "^1.1.13",
     "chai": "^4.2.0",
-    "eslint": "^6.2.2",
+    "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-plugin-import": "^2.18.2",
-    "flow-bin": "^0.106.1",
-    "mocha": "^6.2.0",
-    "sinon": "^7.4.1"
+    "eslint-plugin-import": "^2.20.0",
+    "flow-bin": "^0.106.3",
+    "mocha": "^6.2.2",
+    "sinon": "^7.5.0"
   }
 }
