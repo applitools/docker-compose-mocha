@@ -12,6 +12,7 @@ const {
   runASubEnvironment,
   runAnEnvironmentWithStopStart,
   runAnEnvironment,
+  runAnEnvironmentWithPauseUnpause,
 } = require('./../tools/helpers');
 
 describe('dockerComposeTool', () => {
@@ -51,6 +52,8 @@ describe('dockerComposeTool', () => {
   });
 
   it('should stop the service by name and see its not running and then start the service and see its running', () => runAnEnvironmentWithStopStart(pathToCompose));
+
+  it('should keep the same address on pause and unpause of a service', () => runAnEnvironmentWithPauseUnpause(pathToCompose));
 
   it('should clean up before setting up an environment correctly', () => runAnOldEnvironment(pathToCompose)
     .then((oldEnvironmentName) => runAnEnvironment(pathToCompose)

@@ -7,6 +7,9 @@ const { getRandomEnvironmentName } = require('./../../lib/get-random-environment
 const dockerStopByServiceName = require('./../../lib/docker-stop-by-service-name');
 const dockerStartByServiceName = require('./../../lib/docker-start-by-service-name');
 const dockerCheckByServiceName = require('./../../lib/docker-check-by-service-name');
+const dockerPauseByServiceName = require('./../../lib/docker-pause-by-service-name');
+const dockerUnpauseByServiceName = require('./../../lib/docker-unpause-by-service-name');
+const getAddressForService = require('./../../lib/get-address-for-service');
 const main = require('./../../index');
 const { simulateMochaRun } = require('./mocha-helper');
 const pullTools = require('./../../lib/docker-pull-image-by-name');
@@ -114,6 +117,38 @@ const runAnEnvironmentWithStopStart = async (pathToCompose) => {
   return verifyEnvironmentDownByProjectName(generatedEnvName, pathToCompose);
 };
 
+const runAnEnvironmentWithPauseUnpause = async (pathToCompose) => {
+  let generatedEnvName = '';
+  await simulateMochaRun((before, after) => {
+    generatedEnvName = main.dockerComposeTool(before, after, pathToCompose);
+  }, async () => {
+    try {
+      const serviceName = 'dct_s1';
+      const checkBefore = await dockerCheckByServiceName(generatedEnvName,
+        pathToCompose, serviceName);
+      expect(checkBefore).to.eql(true);
+      const address = await getAddressForService(generatedEnvName, pathToCompose, serviceName);
+      await dockerPauseByServiceName(generatedEnvName,
+        pathToCompose, serviceName);
+      const checkAfterStop = await dockerCheckByServiceName(generatedEnvName,
+        pathToCompose, serviceName);
+      expect(checkAfterStop).to.eql(false);
+      await dockerUnpauseByServiceName(generatedEnvName,
+        pathToCompose, serviceName);
+      const checkAfterRestart = await dockerCheckByServiceName(generatedEnvName,
+        pathToCompose, serviceName);
+      expect(checkAfterRestart).to.eql(true);
+      const addressAfterPause = await getAddressForService(generatedEnvName,
+        pathToCompose, serviceName);
+      expect(address).to.eql(addressAfterPause);
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  });
+  return verifyEnvironmentDownByProjectName(generatedEnvName, pathToCompose);
+};
+
 const runASubEnvironment = async (pathToCompose) => {
   const firstEnvLoad = (before, after) => {
     const options = {
@@ -194,4 +229,5 @@ module.exports = {
   runASubEnvironment,
   runAnEnvironmentWithStopStart,
   runAnEnvironment,
+  runAnEnvironmentWithPauseUnpause,
 };

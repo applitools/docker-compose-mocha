@@ -11,7 +11,7 @@ let sandbox;
 
 describe('getAddressForService', () => {
   beforeEach(() => {
-    sandbox = sinon.sandbox.create();
+    sandbox = sinon.createSandbox();
   });
 
   afterEach(() => {

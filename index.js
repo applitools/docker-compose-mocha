@@ -2,7 +2,7 @@
 
 
 const { exec } = require('child-process-promise');
-const chalk = require('chalk').default;
+const chalk = require('chalk');
 const { Spinner } = require('cli-spinner');
 const chance = require('./lib/setup-environment-names-seed');
 const { cleanupContainersByEnvironmentName, cleanupOrphanEnvironments } = require('./lib/docker-utility-functions');
