@@ -74,6 +74,7 @@ module.exports = {
       shouldPullImages = false,
       brutallyKill = true,
       containerRetentionInMinutes = null,
+      beforeContainerCleanUp = () => {}
     }
     /* :DockerComposeToolOptions */ = {})/* : string */ {
     const randomComposeEnv = envName
@@ -139,6 +140,7 @@ module.exports = {
 
     afterFunction(() => {
       if (performContainerCleanup) {
+        beforeContainerCleanUp();
         return cleanupContainersByEnvironmentName(runNameSpecific,
           pathToComposeFile, runNameDisplay, brutallyKill);
       }
