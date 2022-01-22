@@ -23,7 +23,7 @@
     "child-process-promise": "^2.2.1",
     "cli-spinner": "^0.2.10",
     "js-yaml": "^3.13.1",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^3.1.1"
   },
   "devDependencies": {
     "@applitools/build-commons": "^1.1.13",
