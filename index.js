@@ -18,7 +18,7 @@ const dockerCheckByServiceName = require('./lib/docker-check-by-service-name');
 const healthCheckMethods = require('./lib/health-check-methods');
 const getAddressForService = require('./lib/get-address-for-service');
 const getLogsForService = require('./lib/get-logs-for-service');
-
+const recreateEnv = require('./lib/docker-recreate-env');
 
 function replaceFunctionsWithTheirValues(envVars) {
   Object.entries(envVars).forEach(([key, value]) => {
@@ -84,6 +84,9 @@ module.exports = {
     const runNameDisplay = `${randomComposeEnv.firstName} ${randomComposeEnv.lastName}`;
     const performCleanup = cleanUp;
     const performContainerCleanup = containerCleanUp;
+    const envVarsToUse = envVars ? { env: { PATH: process.env.PATH, ...envVars } } : {};
+
+    recreateEnv.bind({ envVars: envVarsToUse });
 
     beforeFunction(async () => {
       if (shouldPullImages) {
@@ -123,7 +126,7 @@ module.exports = {
         console.log('--- ENVIRONMENT VARIABLES END');
       }
       await exec(`docker-compose -p ${runNameSpecific} -f "${pathToComposeFile}" up -d ${onlyTheseServicesMessageCommandAddition}`,
-        envVars ? { env: { PATH: process.env.PATH, ...envVars } } : {});
+        envVarsToUse);
 
       if (!process.env.NOSPIN) {
         spinner.stop();
@@ -167,4 +170,5 @@ module.exports = {
   dockerCheckByServiceName,
   dockerPauseByServiceName,
   dockerUnpauseByServiceName,
+  recreateEnv,
 };
