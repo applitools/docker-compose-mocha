@@ -212,7 +212,7 @@ function checkOldEnvironmentWasCleaned(pathToCompose, oldEnvName) {
 
 const runAnOldEnvironment = async (pathToCompose) => {
   const moreThan20MinutesOldProjectName = getRandomEnvironmentName(chance, 35).envName;
-  await exec(`docker-compose -p ${moreThan20MinutesOldProjectName} -f ${pathToCompose} up -d`);
+  await exec(`docker-compose -p ${moreThan20MinutesOldProjectName} -f ${pathToCompose} up -d`, { shell: '/bin/zsh' });
 
   const resultDct1 = await main.getAddressForService(moreThan20MinutesOldProjectName, pathToCompose, 'dct_s1', 3001);
   expect(Number(resultDct1.replace('0.0.0.0:', ''))).to.be.above(1);
