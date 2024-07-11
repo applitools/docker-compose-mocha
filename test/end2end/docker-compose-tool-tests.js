@@ -1,10 +1,13 @@
-const { describe, it, before: b } = require('mocha');
+const {
+  describe, it, before: b,
+} = require('mocha');
 const { expect } = require('chai');
 const sinon = require('sinon');
 const main = require('../../index');
 const { simulateMochaRun } = require('../tools/mocha-helper');
 const { dockerPullImageByName } = require('../../lib/docker-pull-image-by-name');
 const dockerPullHostObject = require('../../lib/docker-pull-image-by-name');
+const packageJson = require('../../package.json');
 
 const {
   runAnOldEnvironment,
@@ -31,7 +34,23 @@ describe('dockerComposeTool', () => {
     });
   });
 
-  it.only('should load a sub-environment correctly, and then the rest of the environment', async () => {
+  it('should kill env with volume containing env variables', async () => {
+    const path = `${__dirname}/docker-compose-with-volume-env-var.yml`;
+    let envName;
+
+    await simulateMochaRun((before, after) => {
+      envName = main.dockerComposeTool(before, after, path, {
+        envVars: {
+          INTERESTING_PAGES: `${__dirname}/interestingPages`,
+          SAMPLE_WEB_APP_TESTKIT_DEP_VERSION: packageJson.devDependencies['@applitools/sample-web-app-testkit'].replace('^', ''),
+        },
+      });
+    }, async () => {
+      await checkOldEnvironmentWasCleaned(path, envName);
+    });
+  });
+
+  it('should load a sub-environment correctly, and then the rest of the environment', async () => {
     const spy = sinon.spy(dockerPullImageByName);
     dockerPullHostObject.dockerPullImageByName = spy;
     const envName = await runASubEnvironment(pathToCompose);

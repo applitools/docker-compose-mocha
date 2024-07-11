@@ -1,0 +1,10 @@
+services:
+  sample-web-app-testkit:
+    image: gcr.io/rendering-grid/applitools/sample-web-app-testkit:${SAMPLE_WEB_APP_TESTKIT_DEP_VERSION}
+    ports:
+      - 80
+    volumes:
+      - "${INTERESTING_PAGES}:/more/public"
+    environment:
+      MORE_PUBLIC: /more/public
+      DEBUG: "*"

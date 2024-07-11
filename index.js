@@ -139,8 +139,13 @@ module.exports = {
     afterFunction(() => {
       if (performContainerCleanup) {
         beforeContainerCleanUp();
-        return cleanupContainersByEnvironmentName(runNameSpecific,
-          pathToComposeFile, runNameDisplay, brutallyKill);
+        return cleanupContainersByEnvironmentName(
+          runNameSpecific,
+          pathToComposeFile,
+          runNameDisplay,
+          brutallyKill,
+          envVars,
+        );
       }
 
       return Promise.resolve();
