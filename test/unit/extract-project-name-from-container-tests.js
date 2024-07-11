@@ -1,7 +1,6 @@
-
 const { describe, it } = require('mocha');
 const { expect } = require('chai');
-const extractProjectNameFromContainer = require('./../../lib/extract-project-name-from-container');
+const extractProjectNameFromContainer = require('../../lib/extract-project-name-from-container');
 
 describe('extractProjectNameFromContainer', () => {
   it('should extract the project name from the container stdout line', () => {

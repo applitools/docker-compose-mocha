@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const { describe, it } = require('mocha');
-const extractContainerIdFromName = require('./../../lib/extract-container-id-from-name');
+const extractContainerIdFromName = require('../../lib/extract-container-id-from-name');
 
 const divider = 'zzdivzz';
 describe('extractContainerIdFromName', () => {

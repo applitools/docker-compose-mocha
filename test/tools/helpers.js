@@ -2,17 +2,17 @@ const { expect } = require('chai');
 const { promisify } = require('util');
 const { exec } = require('child-process-promise');
 const fetch = require('node-fetch').default;
-const chance = require('./../../lib/setup-environment-names-seed');
-const { getRandomEnvironmentName } = require('./../../lib/get-random-environment-name');
-const dockerStopByServiceName = require('./../../lib/docker-stop-by-service-name');
-const dockerStartByServiceName = require('./../../lib/docker-start-by-service-name');
-const dockerCheckByServiceName = require('./../../lib/docker-check-by-service-name');
-const dockerPauseByServiceName = require('./../../lib/docker-pause-by-service-name');
-const dockerUnpauseByServiceName = require('./../../lib/docker-unpause-by-service-name');
-const getAddressForService = require('./../../lib/get-address-for-service');
-const main = require('./../../index');
+const chance = require('../../lib/setup-environment-names-seed');
+const { getRandomEnvironmentName } = require('../../lib/get-random-environment-name');
+const dockerStopByServiceName = require('../../lib/docker-stop-by-service-name');
+const dockerStartByServiceName = require('../../lib/docker-start-by-service-name');
+const dockerCheckByServiceName = require('../../lib/docker-check-by-service-name');
+const dockerPauseByServiceName = require('../../lib/docker-pause-by-service-name');
+const dockerUnpauseByServiceName = require('../../lib/docker-unpause-by-service-name');
+const getAddressForService = require('../../lib/get-address-for-service');
+const main = require('../../index');
 const { simulateMochaRun } = require('./mocha-helper');
-const pullTools = require('./../../lib/docker-pull-image-by-name');
+const pullTools = require('../../lib/docker-pull-image-by-name');
 
 let envName = '';
 

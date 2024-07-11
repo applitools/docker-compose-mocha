@@ -1,6 +1,5 @@
 // @flow
 
-
 const { exec } = require('child-process-promise');
 const chalk = require('chalk');
 const { Spinner } = require('cli-spinner');
@@ -18,7 +17,6 @@ const dockerCheckByServiceName = require('./lib/docker-check-by-service-name');
 const healthCheckMethods = require('./lib/health-check-methods');
 const getAddressForService = require('./lib/get-address-for-service');
 const getLogsForService = require('./lib/get-logs-for-service');
-
 
 function replaceFunctionsWithTheirValues(envVars) {
   Object.entries(envVars).forEach(([key, value]) => {
@@ -74,7 +72,7 @@ module.exports = {
       shouldPullImages = false,
       brutallyKill = true,
       containerRetentionInMinutes = null,
-      beforeContainerCleanUp = () => {}
+      beforeContainerCleanUp = () => {},
     }
     /* :DockerComposeToolOptions */ = {})/* : string */ {
     const randomComposeEnv = envName

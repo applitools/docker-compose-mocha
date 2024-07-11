@@ -1,11 +1,10 @@
-
 const {
   describe, it, beforeEach, afterEach,
 } = require('mocha');
 const { expect } = require('chai');
 const sinon = require('sinon');
 const childProcess = require('child-process-promise');
-const getAddressForService = require('./../../lib/get-address-for-service');
+const getAddressForService = require('../../lib/get-address-for-service');
 
 let sandbox;
 

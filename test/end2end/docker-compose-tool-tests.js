@@ -1,10 +1,10 @@
 const { describe, it, before: b } = require('mocha');
 const { expect } = require('chai');
 const sinon = require('sinon');
-const main = require('./../../index');
+const main = require('../../index');
 const { simulateMochaRun } = require('../tools/mocha-helper');
-const { dockerPullImageByName } = require('./../../lib/docker-pull-image-by-name');
-const dockerPullHostObject = require('./../../lib/docker-pull-image-by-name');
+const { dockerPullImageByName } = require('../../lib/docker-pull-image-by-name');
+const dockerPullHostObject = require('../../lib/docker-pull-image-by-name');
 
 const {
   runAnOldEnvironment,
@@ -13,7 +13,7 @@ const {
   runAnEnvironmentWithStopStart,
   runAnEnvironment,
   runAnEnvironmentWithPauseUnpause,
-} = require('./../tools/helpers');
+} = require('../tools/helpers');
 
 describe('dockerComposeTool', () => {
   const pathToCompose = `${__dirname}/docker-compose.yml`;
@@ -30,7 +30,6 @@ describe('dockerComposeTool', () => {
       await checkOldEnvironmentWasCleaned(pathToCompose, envName);
     });
   });
-
 
   it.only('should load a sub-environment correctly, and then the rest of the environment', async () => {
     const spy = sinon.spy(dockerPullImageByName);
