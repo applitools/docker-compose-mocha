@@ -120,7 +120,7 @@ module.exports = {
         });
         console.log('--- ENVIRONMENT VARIABLES END');
       }
-      await exec(`docker-compose -p ${runNameSpecific} -f "${pathToComposeFile}" up -d ${onlyTheseServicesMessageCommandAddition}`,
+      await exec(`docker compose -p ${runNameSpecific} -f "${pathToComposeFile}" up -d ${onlyTheseServicesMessageCommandAddition}`,
         envVars ? { env: { PATH: process.env.PATH, ...envVars }, shell: '/bin/zsh' } : {});
 
       if (!process.env.NOSPIN) {
