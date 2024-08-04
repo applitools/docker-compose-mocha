@@ -9,6 +9,7 @@ const { cleanupContainersByEnvironmentName, cleanupOrphanEnvironments } = requir
 const dockerPullImagesFromComposeFile = require('./lib/docker-pull-images-from-compose-file');
 const { getRandomEnvironmentName, extractEnvFromEnvName } = require('./lib/get-random-environment-name');
 
+const getShell = require('./lib/shell');
 const dockerStartByServiceName = require('./lib/docker-start-by-service-name');
 const dockerStopByServiceName = require('./lib/docker-stop-by-service-name');
 const dockerPauseByServiceName = require('./lib/docker-pause-by-service-name');
@@ -121,7 +122,7 @@ module.exports = {
         console.log('--- ENVIRONMENT VARIABLES END');
       }
       await exec(`docker compose -p ${runNameSpecific} -f "${pathToComposeFile}" up -d ${onlyTheseServicesMessageCommandAddition}`,
-        envVars ? { env: { PATH: process.env.PATH, ...envVars }, shell: '/bin/zsh' } : {});
+        envVars ? { env: { PATH: process.env.PATH, ...envVars }, shell: getShell() } : {});
 
       if (!process.env.NOSPIN) {
         spinner.stop();
