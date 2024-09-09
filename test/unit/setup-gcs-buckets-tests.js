@@ -1,16 +1,16 @@
 const {
   describe, it, beforeEach, afterEach,
 } = require('mocha');
-const gcs = require('../../lib/setup-gcs-buckets');
-const {Storage} = require('@google-cloud/storage')
+const { Storage } = require('@google-cloud/storage');
 const sinon = require('sinon');
+const gcs = require('../../lib/setup-gcs-buckets');
 
-let sandbox
+let sandbox;
 
 describe('setupGcsBuckets', () => {
-  let bucketFake
-    , mockFiles
-    , mockBucket
+  let bucketFake;
+  let mockFiles;
+  let mockBucket;
 
   const configuration = {
     spec: {
@@ -18,41 +18,44 @@ describe('setupGcsBuckets', () => {
         volumeMounts: [],
       }],
     },
-    stam: 'data'
-  }
+    stam: 'data',
+  };
 
   const metadata = {
     metadata: {
       podConfHash: 'stamHash',
-    }
-  }
+    },
+  };
 
   function getFileMock() {
-    let counter = 0
+    let counter = 0;
 
     return sandbox.fake(() => {
-      return mockFiles[counter++]
-    })
+      const file = mockFiles[counter];
+      counter += 1;
+
+      return file;
+    });
   }
 
   beforeEach(() => {
-    process.env.TEST_CONFIGS_BUCKET = 'configs'
-    process.env.TEST_LOCKS_BUCKET = 'locks'
-    process.env.ORIGINAL_CONFIGS_BUCKET = 'origins'
-    sandbox = sinon.createSandbox()
+    process.env.TEST_CONFIGS_BUCKET = 'configs';
+    process.env.TEST_LOCKS_BUCKET = 'locks';
+    process.env.ORIGINAL_CONFIGS_BUCKET = 'origins';
+    sandbox = sinon.createSandbox();
     mockFiles = [...Array(5).keys()].map(() => ({
       name: 'stam',
-      save: sandbox.stub().returnsThis(),
+      save: sandbox.stub().resolves(),
       delete: sandbox.stub(),
-      download: sandbox.stub().returns([Buffer.from(JSON.stringify(configuration))]),
-      metadata: metadata,
-    }))
+      download: sandbox.stub().resolves([Buffer.from(JSON.stringify(configuration))]),
+      metadata,
+    }));
     mockBucket = {
-      getFiles: sandbox.stub().returns([mockFiles]),
-      file: getFileMock()
-    }
-    bucketFake = sandbox.stub().returns(mockBucket)
-    sandbox.replace(Storage.prototype, 'bucket', bucketFake)
+      getFiles: sandbox.stub().resolves([mockFiles]),
+      file: getFileMock(),
+    };
+    bucketFake = sandbox.stub().returns(mockBucket);
+    sandbox.replace(Storage.prototype, 'bucket', bucketFake);
   });
 
   afterEach(() => {
@@ -61,22 +64,23 @@ describe('setupGcsBuckets', () => {
 
   it('should call configurations and locks buckets', async () => {
     // Act
-    await gcs(Storage).setupGcsBuckets()
+    await gcs(Storage).setupGcsBuckets();
 
     // Assert
-    sandbox.assert.calledThrice(bucketFake)
-    sandbox.assert.calledWithExactly(bucketFake, 'configs')
-    sandbox.assert.calledWithExactly(bucketFake, 'locks')
-    sandbox.assert.calledWithExactly(bucketFake, 'origins')
+    sandbox.assert.calledThrice(bucketFake);
+    sandbox.assert.calledWithExactly(bucketFake, 'configs');
+    sandbox.assert.calledWithExactly(bucketFake, 'locks');
+    sandbox.assert.calledWithExactly(bucketFake, 'origins');
   });
 
   it('should call delete on all files to clean configs bucket', async () => {
     // Act
-    await gcs(Storage).setupGcsBuckets()
+    await gcs(Storage).setupGcsBuckets();
 
     // Assert
-    for (const file of mockFiles) {
-      sandbox.assert.calledOnce(file.delete)
+    for (let i = 0; i < mockFiles.length; i += 1) {
+      const file = mockFiles[i];
+      sandbox.assert.calledOnce(file.delete);
     }
   });
 
@@ -88,26 +92,29 @@ describe('setupGcsBuckets', () => {
           {
             resources: {
               requests: {
-                memory: "400Mi",
-                cpu: "500m"
+                memory: '400Mi',
+                cpu: '500m',
               },
               limits: {
-                memory: "400Mi",
-                cpu: "500m"
-              }
-            }
-          }
-        ]
+                memory: '400Mi',
+                cpu: '500m',
+              },
+            },
+          },
+        ],
       },
-      stam: "data"
-    }
+      stam: 'data',
+    };
 
     // Act
-    await gcs(Storage).setupGcsBuckets()
+    await gcs(Storage).setupGcsBuckets();
 
     // Assert
-    for (const file of mockFiles) {
-      sandbox.assert.calledWithExactly(file.save, JSON.stringify(expectedConfig), { metadata: metadata })
+    for (let i = 0; i < mockFiles.length; i += 1) {
+      const file = mockFiles[i];
+      sandbox.assert.calledWithExactly(file.save, JSON.stringify(expectedConfig), {
+        metadata,
+      });
     }
   });
-})
+});
