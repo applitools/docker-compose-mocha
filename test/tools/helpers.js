@@ -128,7 +128,7 @@ const runAnEnvironmentWithPauseUnpause = async (pathToCompose) => {
       const checkBefore = await dockerCheckByServiceName(generatedEnvName,
         pathToCompose, serviceName);
       expect(checkBefore).to.eql(true);
-      const address = await getAddressForService(generatedEnvName, pathToCompose, serviceName);
+      const address = await getAddressForService(generatedEnvName, pathToCompose, serviceName, 3001);
       await dockerPauseByServiceName(generatedEnvName,
         pathToCompose, serviceName);
       const checkAfterStop = await dockerCheckByServiceName(generatedEnvName,
@@ -140,7 +140,7 @@ const runAnEnvironmentWithPauseUnpause = async (pathToCompose) => {
         pathToCompose, serviceName);
       expect(checkAfterRestart).to.eql(true);
       const addressAfterPause = await getAddressForService(generatedEnvName,
-        pathToCompose, serviceName);
+        pathToCompose, serviceName, 3001);
       expect(address).to.eql(addressAfterPause);
     } catch (err) {
       console.error(err);
