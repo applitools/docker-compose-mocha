@@ -1,3 +1,4 @@
+version: '2'
 services:
   sample-web-app-testkit:
     image: gcr.io/rendering-grid/applitools/sample-web-app-testkit:${SAMPLE_WEB_APP_TESTKIT_DEP_VERSION}
@@ -8,3 +9,4 @@ services:
     environment:
       MORE_PUBLIC: /more/public
       DEBUG: "*"
+

@@ -117,4 +117,60 @@ describe('setupGcsBuckets', () => {
       });
     }
   });
+
+  it('should remove nodeSelector, volumes and serviceAccountName from config', async () => {
+    // Arrange
+    mockFiles.map((file) => file.download.resolves([Buffer.from(JSON.stringify({
+      spec: {
+        nodeSelector: 'someSelector',
+        volumes: [],
+        serviceAccountName: '',
+        containers: [
+          {
+            resources: {
+              requests: {
+                memory: '400Mi',
+                cpu: '500m',
+              },
+              limits: {
+                memory: '400Mi',
+                cpu: '500m',
+              },
+            },
+          },
+        ],
+      },
+      stam: 'data',
+    }))]));
+    const expectedConfig = {
+      spec: {
+        containers: [
+          {
+            resources: {
+              requests: {
+                memory: '400Mi',
+                cpu: '500m',
+              },
+              limits: {
+                memory: '400Mi',
+                cpu: '500m',
+              },
+            },
+          },
+        ],
+      },
+      stam: 'data',
+    };
+
+    // Act
+    await gcs(Storage).setupGcsBuckets();
+
+    // Assert
+    for (let i = 0; i < mockFiles.length; i += 1) {
+      const file = mockFiles[i];
+      sandbox.assert.calledWithExactly(file.save, JSON.stringify(expectedConfig), {
+        metadata,
+      });
+    }
+  });
 });

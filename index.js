@@ -76,6 +76,7 @@ module.exports = {
       containerRetentionInMinutes = null,
       beforeContainerCleanUp = () => {},
       useConfigurationsBuckets = false,
+      gcStorage,
     }
     /* :DockerComposeToolOptions */ = {})/* : string */ {
     const randomComposeEnv = envName
@@ -139,7 +140,7 @@ module.exports = {
       }
 
       if (useConfigurationsBuckets) {
-        ;({configsBucket, locksBucket} = await setUpGcsBuckets())
+        await setUpGcsBuckets(gcStorage);
       }
     });
 

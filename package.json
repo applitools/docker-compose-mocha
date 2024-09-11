@@ -34,7 +34,7 @@
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.0",
     "flow-bin": "^0.116.1",
-    "mocha": "^6.2.2",
+    "mocha": "^10.7.3",
     "sinon": "^8.1.1"
   }
 }
