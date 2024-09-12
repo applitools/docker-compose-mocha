@@ -18,7 +18,7 @@ const dockerCheckByServiceName = require('./lib/docker-check-by-service-name');
 const healthCheckMethods = require('./lib/health-check-methods');
 const getAddressForService = require('./lib/get-address-for-service');
 const getLogsForService = require('./lib/get-logs-for-service');
-const { setUpGcsBuckets, getLocksBucket, getConfigsBucket } = require('./lib/setup-gcs-buckets')();
+const { setupGcsBuckets, getLocksBucket, getConfigsBucket } = require('./lib/setup-gcs-buckets')();
 
 function replaceFunctionsWithTheirValues(envVars) {
   Object.entries(envVars).forEach(([key, value]) => {
@@ -75,8 +75,6 @@ module.exports = {
       brutallyKill = true,
       containerRetentionInMinutes = null,
       beforeContainerCleanUp = () => {},
-      useConfigurationsBuckets = false,
-      gcStorage,
     }
     /* :DockerComposeToolOptions */ = {})/* : string */ {
     const randomComposeEnv = envName
@@ -138,10 +136,6 @@ module.exports = {
           healthCheck.options || {},
           startOnlyTheseServices);
       }
-
-      if (useConfigurationsBuckets) {
-        await setUpGcsBuckets(gcStorage);
-      }
     });
 
     afterFunction(() => {
@@ -180,4 +174,5 @@ module.exports = {
   dockerUnpauseByServiceName,
   getLocksBucket,
   getConfigsBucket,
+  setupGcsBuckets,
 };
