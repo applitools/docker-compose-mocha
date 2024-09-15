@@ -1,13 +1,13 @@
 {
   "name": "@applitools/docker-compose-mocha",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Tool used for setting up an isolated environment for end to end testing / integration testing using Docker Compose",
   "main": "index.js",
   "scripts": {
     "lint": "eslint ./lib/**/*.js ./test/**/*.js ./*.js --fix",
     "test": "npm run test:unit && npm run test:e2e && npm run lint #&& npm run flow",
-    "test:e2e": "mocha --no-timeouts test/end2end/*.js",
-    "test:unit": "mocha test/unit/*.js",
+    "test:e2e": "mocha --no-timeouts --exit test/end2end/*.js",
+    "test:unit": "mocha test/unit/*.js --no-timeouts",
     "flow": "flow; test $? -eq 0 -o $? -eq 2"
   },
   "repository": {
@@ -30,11 +30,12 @@
     "@applitools/sample-web-app-testkit": "^1.3.85",
     "@google-cloud/storage": "^7.12.1",
     "chai": "^4.2.0",
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.20.0",
     "flow-bin": "^0.116.1",
     "mocha": "^10.7.3",
+    "object-hash": "^3.0.0",
     "sinon": "^8.1.1"
   }
 }

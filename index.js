@@ -18,7 +18,9 @@ const dockerCheckByServiceName = require('./lib/docker-check-by-service-name');
 const healthCheckMethods = require('./lib/health-check-methods');
 const getAddressForService = require('./lib/get-address-for-service');
 const getLogsForService = require('./lib/get-logs-for-service');
-const { setupGcsBuckets, getLocksBucket, getConfigsBucket } = require('./lib/setup-gcs-buckets')();
+const {
+  setupGcsBuckets, getLocksBucket, getConfigsBucket, teardownGcsBuckets,
+} = require('./lib/setup-gcs-buckets')();
 
 function replaceFunctionsWithTheirValues(envVars) {
   Object.entries(envVars).forEach(([key, value]) => {
@@ -60,7 +62,8 @@ module.exports = {
    * for your test environment
    *
    */
-  dockerComposeTool: function dockerComposeTool(beforeFunction/* :Function */,
+  dockerComposeTool: function dockerComposeTool(
+    beforeFunction/* :Function */,
     afterFunction/* :Function */,
     pathToComposeFile/* : string */,
     {
@@ -76,7 +79,8 @@ module.exports = {
       containerRetentionInMinutes = null,
       beforeContainerCleanUp = () => {},
     }
-    /* :DockerComposeToolOptions */ = {})/* : string */ {
+    /* :DockerComposeToolOptions */ = {},
+  )/* : string */ {
     const randomComposeEnv = envName
       ? extractEnvFromEnvName(envName)
       : getRandomEnvironmentName(chance);
@@ -122,8 +126,10 @@ module.exports = {
         });
         console.log('--- ENVIRONMENT VARIABLES END');
       }
-      await exec(`docker compose -p ${runNameSpecific} -f "${pathToComposeFile}" up -d ${onlyTheseServicesMessageCommandAddition}`,
-        envVars ? { env: { PATH: process.env.PATH, ...envVars }, shell: getShell() } : {});
+      await exec(
+        `docker compose -p ${runNameSpecific} -f "${pathToComposeFile}" up -d ${onlyTheseServicesMessageCommandAddition}`,
+        envVars ? { env: { PATH: process.env.PATH, ...envVars }, shell: getShell() } : {},
+      );
 
       if (!process.env.NOSPIN) {
         spinner.stop();
@@ -131,10 +137,12 @@ module.exports = {
       }
 
       if (healthCheck !== null && typeof healthCheck === 'object' && healthCheck.state === true) {
-        await healthCheckMethods.verifyServicesReady(runNameSpecific,
+        await healthCheckMethods.verifyServicesReady(
+          runNameSpecific,
           pathToComposeFile,
           healthCheck.options || {},
-          startOnlyTheseServices);
+          startOnlyTheseServices,
+        );
       }
     });
 
@@ -175,4 +183,5 @@ module.exports = {
   getLocksBucket,
   getConfigsBucket,
   setupGcsBuckets,
+  teardownGcsBuckets,
 };

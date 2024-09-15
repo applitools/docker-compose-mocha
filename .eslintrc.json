@@ -2,7 +2,9 @@
     "extends": "airbnb-base",
     "rules": {
         "no-console": 0,
-        "func-names": 0
+        "func-names": 0,
+        "max-len": ["error", { "code": 200, "ignoreStrings": true }],
+        "no-promise-executor-return": "off"
     },
     "plugins": [
         "import"

@@ -53,6 +53,8 @@ describe('setupGcsBuckets', () => {
     mockBucket = {
       getFiles: sandbox.stub().resolves([mockFiles]),
       file: getFileMock(),
+      create: sandbox.stub(),
+      exists: sandbox.stub().returns([false]),
     };
     bucketFake = sandbox.stub().returns(mockBucket);
     sandbox.replace(Storage.prototype, 'bucket', bucketFake);
@@ -62,9 +64,17 @@ describe('setupGcsBuckets', () => {
     sandbox.restore();
   });
 
+  it('should create config and locks bucket if they dont exist', async () => {
+    // Act
+    await gcs().setupGcsBuckets(Storage);
+
+    // Assert
+    sandbox.assert.calledTwice(mockBucket.create);
+  });
+
   it('should call configurations and locks buckets', async () => {
     // Act
-    await gcs(Storage).setupGcsBuckets();
+    await gcs().setupGcsBuckets(Storage);
 
     // Assert
     sandbox.assert.calledThrice(bucketFake);
@@ -75,12 +85,12 @@ describe('setupGcsBuckets', () => {
 
   it('should call delete on all files to clean configs bucket', async () => {
     // Act
-    await gcs(Storage).setupGcsBuckets();
+    await gcs().setupGcsBuckets(Storage);
 
     // Assert
     for (let i = 0; i < mockFiles.length; i += 1) {
       const file = mockFiles[i];
-      sandbox.assert.calledOnce(file.delete);
+      sandbox.assert.calledTwice(file.delete);
     }
   });
 
@@ -107,13 +117,14 @@ describe('setupGcsBuckets', () => {
     };
 
     // Act
-    await gcs(Storage).setupGcsBuckets();
+    await gcs().setupGcsBuckets(Storage);
 
     // Assert
     for (let i = 0; i < mockFiles.length; i += 1) {
       const file = mockFiles[i];
       sandbox.assert.calledWithExactly(file.save, JSON.stringify(expectedConfig), {
         metadata,
+        resumable: false,
       });
     }
   });
@@ -163,13 +174,14 @@ describe('setupGcsBuckets', () => {
     };
 
     // Act
-    await gcs(Storage).setupGcsBuckets();
+    await gcs().setupGcsBuckets(Storage);
 
     // Assert
     for (let i = 0; i < mockFiles.length; i += 1) {
       const file = mockFiles[i];
       sandbox.assert.calledWithExactly(file.save, JSON.stringify(expectedConfig), {
         metadata,
+        resumable: false,
       });
     }
   });
