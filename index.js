@@ -3,6 +3,7 @@
 const { exec } = require('child-process-promise');
 const chalk = require('chalk');
 const { Spinner } = require('cli-spinner');
+const fs = require('fs');
 const chance = require('./lib/setup-environment-names-seed');
 const { cleanupContainersByEnvironmentName, cleanupOrphanEnvironments } = require('./lib/docker-utility-functions');
 
@@ -59,7 +60,8 @@ module.exports = {
    * for your test environment
    *
    */
-  dockerComposeTool: function dockerComposeTool(beforeFunction/* :Function */,
+  dockerComposeTool: function dockerComposeTool(
+    beforeFunction/* :Function */,
     afterFunction/* :Function */,
     pathToComposeFile/* : string */,
     {
@@ -75,7 +77,8 @@ module.exports = {
       containerRetentionInMinutes = null,
       beforeContainerCleanUp = () => {},
     }
-    /* :DockerComposeToolOptions */ = {})/* : string */ {
+    /* :DockerComposeToolOptions */ = {},
+  )/* : string */ {
     const randomComposeEnv = envName
       ? extractEnvFromEnvName(envName)
       : getRandomEnvironmentName(chance);
@@ -121,8 +124,18 @@ module.exports = {
         });
         console.log('--- ENVIRONMENT VARIABLES END');
       }
-      await exec(`docker compose -p ${runNameSpecific} -f "${pathToComposeFile}" up -d ${onlyTheseServicesMessageCommandAddition}`,
-        envVars ? { env: { PATH: process.env.PATH, ...envVars }, shell: getShell() } : {});
+
+      let envVarsToUse = {};
+
+      if (envVars) {
+        // const npmFile = process.env.NPM_FILE || fs.readFileSync(`${process.env.HOME}/.npmrc`).toString().replace('\n', '');
+        envVarsToUse = { env: { PATH: process.env.PATH, /* NPM_FILE: npmFile, */ ...envVars }, shell: getShell() };
+      }
+
+      await exec(
+        `docker compose -p ${runNameSpecific} -f "${pathToComposeFile}" up -d ${onlyTheseServicesMessageCommandAddition}`,
+        envVarsToUse,
+      );
 
       if (!process.env.NOSPIN) {
         spinner.stop();
@@ -130,10 +143,12 @@ module.exports = {
       }
 
       if (healthCheck !== null && typeof healthCheck === 'object' && healthCheck.state === true) {
-        await healthCheckMethods.verifyServicesReady(runNameSpecific,
+        await healthCheckMethods.verifyServicesReady(
+          runNameSpecific,
           pathToComposeFile,
           healthCheck.options || {},
-          startOnlyTheseServices);
+          startOnlyTheseServices,
+        );
       }
     });
 
