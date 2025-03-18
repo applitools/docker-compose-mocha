@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   sample-web-app-testkit:
     image: gcr.io/rendering-grid/applitools/sample-web-app-testkit:${SAMPLE_WEB_APP_TESTKIT_DEP_VERSION}

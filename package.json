@@ -1,6 +1,6 @@
 {
   "name": "@applitools/docker-compose-mocha",
-  "version": "2.1.1-gcs",
+  "version": "2.1.2-gcs",
   "description": "Tool used for setting up an isolated environment for end to end testing / integration testing using Docker Compose",
   "main": "index.js",
   "scripts": {
@@ -36,6 +36,7 @@
     "flow-bin": "^0.116.1",
     "mocha": "^10.7.3",
     "object-hash": "^3.0.0",
+    "p-retry": "^4.6.2",
     "sinon": "^8.1.1"
   }
 }

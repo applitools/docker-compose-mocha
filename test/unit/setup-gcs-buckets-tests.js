@@ -1,6 +1,7 @@
 const {
   describe, it, beforeEach, afterEach,
 } = require('mocha');
+const { expect } = require('chai');
 const { Storage } = require('@google-cloud/storage');
 const sinon = require('sinon');
 const gcs = require('../../lib/setup-gcs-buckets');
@@ -100,16 +101,7 @@ describe('setupGcsBuckets', () => {
       spec: {
         containers: [
           {
-            resources: {
-              requests: {
-                memory: '400Mi',
-                cpu: '500m',
-              },
-              limits: {
-                memory: '400Mi',
-                cpu: '500m',
-              },
-            },
+            volumeMounts: [],
           },
         ],
       },
@@ -155,20 +147,15 @@ describe('setupGcsBuckets', () => {
     }))]));
     const expectedConfig = {
       spec: {
-        containers: [
-          {
-            resources: {
-              requests: {
-                memory: '400Mi',
-                cpu: '500m',
-              },
-              limits: {
-                memory: '400Mi',
-                cpu: '500m',
-              },
-            },
+        nodeSelector: 'someSelector',
+        volumes: [],
+        serviceAccountName: '',
+        containers: [{
+          resources: {
+            requests: { memory: '400Mi', cpu: '500m' },
+            limits: { memory: '400Mi', cpu: '500m' },
           },
-        ],
+        }],
       },
       stam: 'data',
     };
@@ -184,5 +171,19 @@ describe('setupGcsBuckets', () => {
         resumable: false,
       });
     }
+  });
+
+  it('should save config with overrideData param', async () => {
+    // Act
+    await gcs().setupGcsBuckets(Storage, { overrideData: { stam: { test: 'data' } } });
+
+    // Assert
+    const file = mockFiles[0];
+
+    expect(file.save.firstCall.args[0]).to.eq('{"test":"data"}');
+    expect(file.save.firstCall.args[1]).to.deep.eq({
+      metadata: { metadata: { podConfHash: 'efa50cf8a8cb258b1ed08cc3170cb54b' } },
+      resumable: false,
+    });
   });
 });
