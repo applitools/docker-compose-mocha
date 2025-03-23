@@ -128,8 +128,8 @@ module.exports = {
       let envVarsToUse = {};
 
       if (envVars) {
-        // const npmFile = process.env.NPM_FILE || fs.readFileSync(`${process.env.HOME}/.npmrc`).toString().replace('\n', '');
-        envVarsToUse = { env: { PATH: process.env.PATH, /* NPM_FILE: npmFile, */ ...envVars }, shell: getShell() };
+        const npmFile = process.env.NPM_FILE || fs.readFileSync(`${process.env.HOME}/.npmrc`).toString().replace('\n', '');
+        envVarsToUse = { env: { PATH: process.env.PATH, NPM_FILE: npmFile, ...envVars }, shell: getShell() };
       }
 
       await exec(
