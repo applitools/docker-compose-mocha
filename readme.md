@@ -26,12 +26,12 @@ Inside your project directory type the following code:
 
 ### When using npm
 ```bash
-$ npm i docker-compose-mocha --save-dev
+$ npm i @applitools/docker-compose-mocha --save-dev
 ```
 
 ### When using yarn
 ```bash
-$ yarn add docker-compose-mocha --dev
+$ yarn add @applitools/docker-compose-mocha --dev
 ```
 
 ## Cleanup logic
@@ -50,6 +50,7 @@ Cleanup of current running environment containers.
 When in development mode you can control cleanup flow. Example:
 
  ```js
+ const dct = require('@applitools/docker-compose-mocha');
  // run only a and b, do not cleanup container (We need them up and running for second call to dockerComposeTool)
  const envName = dct.dockerComposeTool(before, after, pathToCompose, {startOnlyTheseServices: ['a', 'b'], containerCleanUp: false});
 
@@ -95,13 +96,11 @@ Consider the following Javascript code which is supposed to be placed in your en
 (most preferably in your before() block)
 
 ```js
-
 const {before, after} = require('mocha');
-const {dockerComposeTool} = require('docker-compose-mocha');
+const {dockerComposeTool} = require('@applitools/docker-compose-mocha');
 const pathToCompose = './docker-compose.yml';
 
 const envName = dockerComposeTool(before, after, pathToCompose);
-
 ```
 
 Once this code ran before your test suite, you will have all the services from your Yaml file
@@ -113,9 +112,8 @@ service is available at which address. For that we have supplied an helper funct
 Please consider the following code
 
 ```js
-
 const {before, after} = require('mocha');
-const {dockerComposeTool, getAddressForService} = require('docker-compose-mocha');
+const {dockerComposeTool, getAddressForService} = require('@applitools/docker-compose-mocha');
 const pathToCompose = './docker-compose.yml';
 
 const envName = dockerComposeTool(before, after, pathToCompose);
@@ -127,7 +125,6 @@ getAddressForService(envName, pathToCompose, serviceName, originalPort)
     .then((result) => {
         console.log(result); // => '0.0.0.0:36589'
     });
-
 ```
 
 This way you can find out on which address every service form your Docker Compose is running
@@ -149,6 +146,7 @@ Disabling cleanup is especially useful when you run sub environments.
 Example:
 
 ```js
+const dct = require('@applitools/docker-compose-mocha');
 // run only a and b
 const envName = dct.dockerComposeTool(before, after, pathToCompose, {startOnlyTheseServices: ['a', 'b'], containerCleanUp: false});
 // add services c and d
@@ -173,6 +171,7 @@ await dockerStartByServiceName(generatedEnvName, pathToCompose, serviceName);
 const afterStopResults = await dockerListByServiceName(generatedEnvName, pathToCompose, serviceName);
 
 ```js
+const dct = require('@applitools/docker-compose-mocha');
 // run only a and b
 const envName = dct.dockerComposeTool(before, after, pathToCompose, {startOnlyTheseServices: ['a', 'b']});
 // add services c and d
@@ -203,9 +202,8 @@ of `http://0.0.0.0:XXXX/healthcheck` - `XXXX` being the random port of your serv
 Here's an example code of the service checking ability:
 
 ```js
-
 const {before, after} = require('mocha');
-const {dockerComposeTool} = require('docker-compose-mocha');
+const {dockerComposeTool} = require('@applitools/docker-compose-mocha');
 const pathToCompose = './docker-compose.yml';
 const options = {
     healthCheck: {
@@ -222,7 +220,6 @@ const options = {
 };
 
 const envName = dockerComposeTool(before, after, pathToCompose);
-
 ```
 
 ### Custom polling methods
